@@ -11,7 +11,7 @@ faker = Faker()
 
 Username = "ifedamilola2009@gmail.com"
 Password = "123@ifeDAM567"
-BaseUrl = "https://testdapdeel-dcc9cyd7gsgkgvf8.eastus-01.azurewebsites.net/api/"
+BaseUrl = "https://fraud-bggrfwfnbfcwcfcu.eastus-01.azurewebsites.net/api/"
 
 
 def login():
@@ -116,7 +116,7 @@ def generate_transaction():
 
 print("Starting")
 
-customers = [generate_customer() for _ in range(100000)]
+customers = [generate_customer() for _ in range(10000)]
 
 for _ in range(5000000):
     generate_transaction()
