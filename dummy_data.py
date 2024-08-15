@@ -1,6 +1,7 @@
 import json
 import random
 import time
+import csv
 
 from faker import Faker
 import uuid
@@ -12,6 +13,17 @@ faker = Faker()
 Username = "ifedamilola2009@gmail.com"
 Password = "123@ifeDAM567"
 BaseUrl = "https://fraud-bggrfwfnbfcwcfcu.eastus-01.azurewebsites.net/api/"
+
+header = [
+    'debitCustomer_email', 'debitCustomer_customerId', 'debitCustomer_name', 'debitCustomer_phone',
+    'debitCustomer_DeviceId', 'debitCustomer_ipAddress', 'debitCustomer_deviceType',
+    'debitCustomer_accountNumber', 'debitCustomer_bankCode', 'debitCustomer_country',
+    'creditCustomer_email', 'creditCustomer_customerId', 'creditCustomer_name', 'creditCustomer_phone',
+    'creditCustomer_accountNumber', 'creditCustomer_bankCode', 'creditCustomer_country',
+    'transaction_transactionId', 'transaction_amount', 'transaction_TransactionDate',
+    'transaction_description', 'transaction_type', 'ObservatoryId'
+]
+rows = []
 
 
 def login():
@@ -34,6 +46,45 @@ headers = {
     "Content-Type": "application/json"
 }
 
+
+def generate_row(data):
+    # Extracting relevant fields
+    row = [
+
+        data['debitCustomer']['email'],
+        data['debitCustomer']['customerId'],
+        data['debitCustomer']['name'],
+        data['debitCustomer']['phone'],
+        data['debitCustomer']['Device']['DeviceId'],
+        data['debitCustomer']['Device']['ipAddress'],
+        data['debitCustomer']['Device']['deviceType'],
+        data['debitCustomer']['account']['accountNumber'],
+        data['debitCustomer']['account']['bankCode'],
+        data['debitCustomer']['account']['country'],
+
+        data['creditCustomer']['email'],
+        data['creditCustomer']['customerId'],
+        data['creditCustomer']['name'],
+        data['creditCustomer']['phone'],
+        data['creditCustomer']['account']['accountNumber'],
+        data['creditCustomer']['account']['bankCode'],
+        data['creditCustomer']['account']['country'],
+
+        data['transaction']['transactionId'],
+        data['transaction']['amount'],
+        data['transaction']['TransactionDate'],
+        data['transaction']['description'],
+        data['transaction']['type'],
+        data['ObservatoryId']
+    ]
+    # Define the header for the CSV
+    rows.append(row)
+
+def generate_csv(rows):
+    with open('transaction_data.csv', 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(header)  # Write the header
+        writer.writerows(rows)  # Write the rows
 
 def get_banks():
     response = requests.get(BaseUrl + "bank/all", headers=headers)
@@ -70,7 +121,7 @@ def pick_random_customer():
 
 def post(t):
     data = t
-    response = requests.post(BaseUrl + "transfer/Ingest",
+    response = requests.post(BaseUrl + "transfer/IngestAndQueue",
                              headers=headers, json=t)
     return response
 
@@ -81,7 +132,7 @@ def generate_transaction():
     while from_customer["customerId"] == to_customer["customerId"]:
         to_customer = pick_random_customer()
 
-    transaction_type = random.choice(["WITHDRAWAL", "TRANSFER"])
+    transaction_type = 1
 
     amount = 0
     rand_num = random.random()
@@ -103,7 +154,9 @@ def generate_transaction():
         },
         "ObservatoryId": 1
     }
-    print(t)
+    print("Transaction Generated " + t["transaction"]["transactionId"])
+    # generate_row(t)
+
     response = post(t)
     if response.status_code == 200:
         print(response.json())
@@ -117,9 +170,10 @@ print("Starting")
 
 customers = [generate_customer() for _ in range(10000)]
 
-for _ in range(5000000):
+for _ in range(50000):
     generate_transaction()
 
+# generate_csv(rows)
 # with open('transactions.json', 'w') as f:
 #     json.dump(transactions, f)
 
