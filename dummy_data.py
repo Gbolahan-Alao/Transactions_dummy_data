@@ -104,7 +104,6 @@ def generate_transaction():
         "ObservatoryId": 1
     }
     print(t)
-    time.sleep(5)
     response = post(t)
     if response.status_code == 200:
         print(response.json())
