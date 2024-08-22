@@ -170,10 +170,10 @@ print("Starting")
 
 customers = [generate_customer() for _ in range(10000)]
 
-for _ in range(50000):
+for _ in range(500000):
     generate_transaction()
 
-# generate_csv(rows)
+generate_csv(rows)
 # with open('transactions.json', 'w') as f:
 #     json.dump(transactions, f)
 
