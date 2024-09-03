@@ -170,7 +170,7 @@ print("Starting")
 
 customers = [generate_customer() for _ in range(10000)]
 
-for _ in range(30000):
+for _ in range(3000000):
     generate_transaction()
 
 # generate_csv(rows)
