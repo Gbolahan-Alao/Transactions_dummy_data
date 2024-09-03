@@ -12,7 +12,7 @@ faker = Faker()
 
 Username = "ifedamilola2009@gmail.com"
 Password = "123@ifeDAM567"
-BaseUrl = "https://fraud-bggrfwfnbfcwcfcu.eastus-01.azurewebsites.net/api/"
+BaseUrl = "https://test.usekudi.com/api/"
 
 header = [
     'debitCustomer_email', 'debitCustomer_customerId', 'debitCustomer_name', 'debitCustomer_phone',
@@ -81,7 +81,7 @@ def generate_row(data):
     rows.append(row)
 
 def generate_csv(rows):
-    with open('transaction_data.csv', 'w', newline='') as file:
+    with open('transaction_data5.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(header)  # Write the header
         writer.writerows(rows)  # Write the rows
@@ -146,9 +146,9 @@ def generate_transaction():
         "debitCustomer": from_customer,
         "creditCustomer": to_customer,
         "transaction": {
-            "transactionId": str(uuid.uuid4()),
+            "transactionId": str(uuid.uuid1())+str(int(time.time() * 1000000)),
             "amount": amount,
-            "TransactionDate": faker.date_time_this_decade().strftime("%Y-%m-%d %H:%M:%S"),
+            "TransactionDate": faker.date_time_this_month().strftime("%Y-%m-%d %H:%M:%S"),
             "description": faker.sentence(),
             "type": transaction_type
         },
@@ -160,7 +160,7 @@ def generate_transaction():
     response = post(t)
     if response.status_code == 200:
         print(response.json())
-    print(response.status_code)
+    print(response)
     return response
 
     # Token, RefreshToken = refresh_token(Token, RefreshToken)
@@ -170,10 +170,10 @@ print("Starting")
 
 customers = [generate_customer() for _ in range(10000)]
 
-for _ in range(500000):
+for _ in range(30000):
     generate_transaction()
 
-generate_csv(rows)
+# generate_csv(rows)
 # with open('transactions.json', 'w') as f:
 #     json.dump(transactions, f)
 
